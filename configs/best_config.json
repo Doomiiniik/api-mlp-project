@@ -1,0 +1,6 @@
+{
+    "input_dim": 16,
+    "hidden_layers": [256, 128],
+    "output_dim": 26,
+    "dropout": 0.10488759686550883
+}
