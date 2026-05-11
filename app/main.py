@@ -5,7 +5,7 @@ from app.middleware.errors import ErrorMiddleware
 from app.middleware.metrics import MetricsMiddleware, metrics_endpoint
 from prometheus_client import Counter, Histogram
 import time
-
+from fastapi.middleware.cors import CORSMiddleware
 
 
 def create_application() -> FastAPI:
@@ -17,6 +17,14 @@ def create_application() -> FastAPI:
     )
    
    # Middlewares
+    app.add_middleware(
+          CORSMiddleware,
+          allow_origins=["*"],   # pozwalamy na requesty z każdego źródła
+          allow_credentials=True,
+          allow_methods=["*"],   # GET, POST, PUT, DELETE...
+          allow_headers=["*"],   # wszystkie nagłówki
+      )
+
     app.add_middleware(ErrorMiddleware)
     app.add_middleware(LoggingMiddleware)
     app.add_middleware(MetricsMiddleware)
