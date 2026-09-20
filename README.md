@@ -1,5 +1,5 @@
 # MLP Letter Classifier – FastAPI + Nginx + HTTPS Deployment
-
+> Model training and experimentation for this API happened in [mlp-openml-project](https://github.com/Doomiiniik/mlp-openml-project)
 A simple machine learning API that predicts handwritten letters (A–Z) based on 16 numerical features.
 The project includes:
 
