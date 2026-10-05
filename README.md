@@ -1,107 +1,82 @@
-# MLP Letter Classifier – FastAPI + Nginx + HTTPS Deployment
-> Model training and experimentation for this API happened in [mlp-openml-project](https://github.com/Doomiiniik/mlp-openml-project)
+# Letter Classifier API
 
-A simple machine learning API that predicts handwritten letters (A–Z) based on 16 numerical features.
-The project includes:
+A small REST API that serves a PyTorch MLP classifying capital letters (A–Z)
+from 16 numeric features. Built to practice deploying an ML model:
+FastAPI, Docker, Nginx and HTTPS.
 
-- FastAPI backend (MLP classifier)
-- Static frontend (HTML/JS)
-- Nginx reverse proxy
-- Full HTTPS deployment using Let's Encrypt
-- Public demo available online
+Live demo: https://api.doomiiniik.dev/
 
----
+Model training lives in a separate repo: [mlp-openml-project](https://github.com/Doomiiniik/mlp-openml-project)
 
-## 🚀 Live Demo
+## Model
 
-You can test the model directly in your browser:
+- PyTorch MLP: 16 inputs → 256 → 128 → 26 classes (ReLU, dropout)
+- Dataset: [OpenML Letter Recognition (ID 6)](https://www.openml.org/d/6), 16 numeric features
+  computed from images of printed capital letters
+- Test accuracy: 96.0% (3,734 test samples)
 
-👉 **https://api.doomiiniik.dev/**
+The API takes the 16 precomputed features, not an image.
 
-The page allows you to paste a 16‑element feature vector and get a predicted letter.
+## API
 
----
+`POST /v1/predict`
 
-## 🧪 Example Input Records
-
-You can use these ready-made examples to test the model:
-
-[8, 10, 6, 7, 2, 3.1, 2.7, 4.8, 3.6, 0.8, 1.9, 2.7, 6, 4, 7, 5]
-
-[3, 7, 4, 5, 1, 1.7, 2.3, 3.2, 2.8, 0.6, 1.1, 2.0, 4, 3, 5, 4]
-
-[5, 12, 7, 9, 3, 2.8, 3.4, 5.6, 4.9, 1.2, 2.3, 3.8, 7, 5, 8, 6]
-
-
----
-
-## 📡 API Endpoint
-
-### **POST /v1/predict**
-
-**Request body:**
+Request:
 ```json
-{
-  "features": [16 numerical values...]
-}
-
-
-{
-  "predicted_class": "A",
-  "probabilities": { ... }
-}
+{ "features": [2, 8, 3, 5, 1, 8, 13, 0, 6, 6, 10, 8, 0, 8, 0, 8] }
 ```
 
+Response:
+```json
+{ "predicted_class": "19", "probabilities": { "0": 0.0, "1": 0.0, "...": "..." } }
+```
 
+- `features` are raw dataset values (integers 0–15). The API applies the same
+  standardization as in training (mean and std stored in `configs/scaler.json`).
+- `predicted_class` is the class index (0–25, 0 = A, so 19 = T). The frontend maps it to a letter.
+- A request with a number of features other than 16 is rejected with HTTP 422.
 
-🏗️ Architecture Overview
+More inputs to try: `[5,12,3,7,2,10,5,5,4,13,3,9,2,8,4,10]` (I), `[4,11,6,8,6,10,6,2,6,10,3,7,2,8,3,9]` (D).
 
-    FastAPI serves the ML model on 127.0.0.1:8000
+Other endpoints: `GET /docs` (Swagger UI), `GET /metrics` (Prometheus metrics).
 
-    Nginx handles:
+## Run locally
 
-        HTTPS termination
+```bash
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
 
-        Reverse proxy for /v1/, /docs, /openapi.json
+Or with Docker (API + Prometheus + Grafana):
 
-        Serving the frontend
+```bash
+docker compose up --build
+```
 
-    Let's Encrypt provides automatic SSL certificate renewal
+API docs: http://localhost:8000/docs
 
-    Frontend communicates with backend via HTTPS
+## Deployment
 
+Client → Nginx (HTTPS) → FastAPI on 127.0.0.1:8000 → model
 
-Client → HTTPS → Nginx → FastAPI → Model
+- Ubuntu server, Nginx as reverse proxy and HTTPS termination
+- Certificate from Let's Encrypt (Certbot, automatic renewal)
+- Nginx serves the static frontend and proxies `/v1/`, `/docs`, `/openapi.json` to the backend
 
+## Project structure
 
-🔧 Technologies Used
+```
+app/main.py              app setup, middleware, routes
+app/api/v1/endpoints/    /predict endpoint
+app/schemas/             request/response validation (Pydantic)
+app/models/              model architecture, loading, inference
+app/middleware/          logging, error handling, metrics
+frontend/                static demo page
+models/, configs/        trained weights, model config, scaler parameters
+```
 
-    Python / FastAPI
+## Limitations
 
-    scikit-learn (MLPClassifier)
-
-    Nginx
-
-    Let's Encrypt (Certbot)
-
-    HTML / JavaScript frontend
-
-    Ubuntu Server
-
-
-
-📦 Deployment Notes
-
-    Backend runs locally behind Nginx
-
-    HTTPS is fully automated via Certbot
-
-    Frontend is served directly from /var/www/
-
-    No mixed-content issues (full HTTPS stack)
-
-
-👤 Author
-
-Dominik
-Project built for portfolio & ML deployment practice.
+- Input is a feature vector, not an image, so the demo is not very intuitive
+- No automated tests yet
+- No CI/CD, deployment is manual
