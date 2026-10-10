@@ -12,6 +12,14 @@ class PredictRequest(BaseModel):
     def validate_length(cls, v):
         if len(v) != 16:
             raise ValueError(f"Expected 16 features, got {len(v)}")
+
+        for i,x in enumerate(v):
+            if x>15 or x<0:
+                raise ValueError(f"Feature not in <0,15> range on {i+1} postion")
+
+
+        
+        
         return v
 
 

@@ -35,6 +35,7 @@ Response:
   standardization as in training (mean and std stored in `configs/scaler.json`).
 - `predicted_class` is the class index (0–25, 0 = A, so 19 = T). The frontend maps it to a letter.
 - A request with a number of features other than 16 is rejected with HTTP 422.
+- Values outside 0–15 are rejected with HTTP 422.
 
 More inputs to try: `[5,12,3,7,2,10,5,5,4,13,3,9,2,8,4,10]` (I), `[4,11,6,8,6,10,6,2,6,10,3,7,2,8,3,9]` (D).
 
