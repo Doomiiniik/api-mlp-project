@@ -47,6 +47,12 @@ Other endpoints: `GET /docs` (Swagger UI), `GET /metrics` (Prometheus metrics).
 pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
+## Tests
+
+```bash
+pip install -r requirements-dev.txt
+python -m pytest -v
+```
 
 Or with Docker (API + Prometheus + Grafana):
 
@@ -79,5 +85,4 @@ models/, configs/        trained weights, model config, scaler parameters
 ## Limitations
 
 - Input is a feature vector, not an image, so the demo is not very intuitive
-- No automated tests yet
 - No CI/CD, deployment is manual
