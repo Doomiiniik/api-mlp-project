@@ -15,7 +15,7 @@ class PredictRequest(BaseModel):
 
         for i,x in enumerate(v):
             if x>15 or x<0:
-                raise ValueError(f"Feature not in <0,15> range on {i+1} postion")
+                raise ValueError(f"Feature not in <0,15> range on {i+1} position")
 
 
         

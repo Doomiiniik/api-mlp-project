@@ -9,7 +9,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         start_time = time.time()
         trace_id = str(uuid.uuid4())
-
+        request.state.uid = trace_id
         # Log request
         request_body = await request.body()
         try:

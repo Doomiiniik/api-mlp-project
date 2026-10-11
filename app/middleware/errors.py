@@ -6,7 +6,7 @@ import uuid
 
 class ErrorMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
-        trace_id = str(uuid.uuid4())
+        trace_id = request.state.uid
 
         try:
             return await call_next(request)
@@ -25,3 +25,4 @@ class ErrorMiddleware(BaseHTTPMiddleware):
                     "trace_id": trace_id
                 }
             )
+1.
