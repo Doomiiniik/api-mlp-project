@@ -85,4 +85,4 @@ models/, configs/        trained weights, model config, scaler parameters
 ## Limitations
 
 - Input is a feature vector, not an image, so the demo is not very intuitive
-- No CI/CD, deployment is manual
+- Tests run automatically on every push (GitHub Actions), but deployment is still manual
